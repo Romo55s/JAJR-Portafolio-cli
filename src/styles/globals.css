@@ -1,0 +1,300 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ======================================================================
+   THEME TOKENS — swapped via [data-theme] on <html>
+   ====================================================================== */
+:root,
+:root[data-theme='green'] {
+  --term-bg: #0a0a0a;
+  --term-surface: #0d0f0d;
+  --term-border: #1a2a1a;
+  --term-text: #d6ffe4;
+  --term-dim: #4ade8088;
+  --term-accent: #00ff9c;
+  --term-muted: #5a8a6c;
+  --term-error: #ff5d6c;
+  --term-warn: #ffb000;
+  --term-link: #6ad0ff;
+}
+
+:root[data-theme='amber'] {
+  --term-bg: #0a0805;
+  --term-surface: #110d05;
+  --term-border: #2a1f0a;
+  --term-text: #ffe8b3;
+  --term-dim: #ffb00088;
+  --term-accent: #ffb000;
+  --term-muted: #8a6a3a;
+  --term-error: #ff5d6c;
+  --term-warn: #ffd166;
+  --term-link: #ffe066;
+}
+
+:root[data-theme='mono'] {
+  --term-bg: #0a0a0a;
+  --term-surface: #111;
+  --term-border: #2a2a2a;
+  --term-text: #f5f5f5;
+  --term-dim: #ffffff88;
+  --term-accent: #ffffff;
+  --term-muted: #888;
+  --term-error: #ff7a85;
+  --term-warn: #ffd166;
+  --term-link: #9ec4ff;
+}
+
+:root[data-theme='matrix'] {
+  --term-bg: #000;
+  --term-surface: #050505;
+  --term-border: #0a3a14;
+  --term-text: #c5ffd5;
+  --term-dim: #00ff4188;
+  --term-accent: #00ff41;
+  --term-muted: #2a8a3c;
+  --term-error: #ff5d6c;
+  --term-warn: #ffb000;
+  --term-link: #6ad0ff;
+}
+
+/* Drupal brand palette (Druplicon / experience block) */
+:root {
+  --drupal-blue: #0678be;
+  --drupal-blue-dark: #045a94;
+  --drupal-blue-light: #2596d9;
+  --drupal-face: #f7fbff;
+}
+
+/* ======================================================================
+   BASE
+   ====================================================================== */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--term-bg);
+  color: var(--term-text);
+}
+
+body {
+  min-height: 100dvh;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  background:
+    radial-gradient(1200px 600px at 50% -20%, rgba(0, 255, 156, 0.06), transparent 60%),
+    var(--term-bg);
+}
+
+html {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Fira Code', Menlo, Consolas, monospace;
+  font-feature-settings: 'liga' 0, 'calt' 0, 'zero' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  background: var(--term-bg);
+  color: var(--term-text);
+  caret-color: var(--term-accent);
+  overscroll-behavior: none;
+}
+
+::selection {
+  background: var(--term-accent);
+  color: var(--term-bg);
+}
+
+a {
+  color: var(--term-link);
+  text-decoration: none;
+  border-bottom: 1px dashed currentColor;
+}
+a:hover {
+  text-decoration: none;
+  border-bottom-style: solid;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--term-border);
+  padding: 0;
+  cursor: pointer;
+}
+
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  outline: none;
+  caret-color: var(--term-accent);
+}
+
+/* Hide all scrollbars but keep scroll */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--term-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--term-muted);
+}
+
+/* ======================================================================
+   TERMINAL ELEMENTS
+   ====================================================================== */
+.term-cursor {
+  display: inline-block;
+  width: 0.6ch;
+  height: 1.1em;
+  background: var(--term-accent);
+  vertical-align: text-bottom;
+  margin-left: 1px;
+  animation: blink 1s steps(1) infinite;
+}
+
+.term-prompt-symbol {
+  color: var(--term-accent);
+}
+
+.scanlines {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.025) 0px,
+    rgba(255, 255, 255, 0.025) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 255, 156, 0.04) 50%,
+    transparent
+  );
+  height: 30%;
+  animation: scan 8s linear infinite;
+}
+
+@media (max-width: 640px) {
+  .scanlines {
+    display: none;
+  }
+}
+
+.crt-glow {
+  text-shadow:
+    0 0 1px currentColor,
+    0 0 8px rgba(0, 255, 156, 0.15);
+}
+
+[data-theme='amber'] .crt-glow {
+  text-shadow:
+    0 0 1px currentColor,
+    0 0 8px rgba(255, 176, 0, 0.18);
+}
+
+[data-theme='mono'] .crt-glow {
+  text-shadow: none;
+}
+
+[data-theme='matrix'] .crt-glow {
+  text-shadow:
+    0 0 1px currentColor,
+    0 0 10px rgba(0, 255, 65, 0.25);
+}
+
+.ascii {
+  font-family: 'JetBrains Mono', monospace;
+  white-space: pre;
+  line-height: 1.05;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--term-border);
+  color: var(--term-text);
+  background: var(--term-surface);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease, transform 120ms ease;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.chip:hover {
+  border-color: var(--term-accent);
+  background: rgba(0, 255, 156, 0.05);
+  transform: translateY(-1px);
+}
+.chip:active {
+  transform: translateY(0);
+}
+.chip kbd {
+  border: 1px solid var(--term-border);
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 0.7rem;
+  color: var(--term-muted);
+  background: var(--term-bg);
+}
+
+@media (max-width: 639px) {
+  .chip {
+    min-height: 42px;
+    padding: 9px 14px;
+    font-size: 0.8125rem;
+    align-items: center;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .scanlines::after {
+    display: none;
+  }
+}
+
+/* Focus rings for keyboard users only */
+:focus-visible {
+  outline: 2px solid var(--term-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

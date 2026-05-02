@@ -1,0 +1,4 @@
+PLACEHOLDER — replace with your actual resume.pdf in /public.
+
+The `resume` command in the CLI links to /resume.pdf. Drop a PDF named
+`resume.pdf` next to this file and the download will Just Work.
