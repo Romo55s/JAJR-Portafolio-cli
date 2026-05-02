@@ -1,4 +1,4 @@
-import type { CommandCtx, OutputBlock, Pipeline, UiEvent } from './types';
+import type { CommandCtx, OutputBlock, OutputBlockInput, Pipeline, UiEvent } from './types';
 import { registry } from './registry';
 import { parse } from './parser';
 import { useTerminalStore, type TerminalActions, type TerminalState } from '../store/terminalStore';
@@ -11,7 +11,7 @@ function nextId(): string {
 }
 
 function makePrint(buffer: OutputBlock[]) {
-  return (block: Omit<OutputBlock, 'id'>): OutputBlock => {
+  return (block: OutputBlockInput): OutputBlock => {
     const full = { ...block, id: nextId() } as OutputBlock;
     buffer.push(full);
     return full;

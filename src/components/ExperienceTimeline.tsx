@@ -1,5 +1,6 @@
 import { education, experience, type Role } from '../content/experience';
 import { DrupalLogoAscii, EXPERIENCE_HEADER_GREP_SNIPPET } from './DrupalLogoAscii';
+import { CmdInsetPanel, CmdSectionTitle } from './cli/CommandChrome';
 
 function fmtPeriod(start: string, end: string | 'present'): string {
   return `${start} → ${end === 'present' ? 'present' : end}`;
@@ -58,7 +59,7 @@ function RoleBulletsStack({ role }: { role: Role }) {
 function SecondaryRoleCard({ role }: { role: Role }) {
   const present = role.end === 'present';
   return (
-    <article className="relative mt-6 pt-5 pl-3 sm:pl-4 border-l-[3px] border-terminal-accent/80 border-t border-dashed border-terminal-border">
+    <article className="relative mt-6 rounded-lg border border-terminal-border/90 bg-terminal-surface/45 pl-3 sm:pl-4 pr-3 py-4 sm:py-5 border-l-[3px] border-l-terminal-accent/75 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]">
       <header className="space-y-1.5">
         <div className="text-sm sm:text-base leading-snug break-words">
           <span className="text-terminal-accent" aria-hidden>
@@ -84,7 +85,9 @@ function SecondaryRoleCard({ role }: { role: Role }) {
           </span>
         </div>
       </header>
-      <RoleBulletsStack role={role} />
+      <div className="mt-4">
+        <RoleBulletsStack role={role} />
+      </div>
     </article>
   );
 }
@@ -94,54 +97,48 @@ export function ExperienceTimeline() {
 
   return (
     <div className="experience-timeline select-text cursor-text pb-1">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-5 px-0.5">
-        <span
-          className="hidden sm:block h-px w-12 shrink-0 bg-gradient-to-r from-transparent to-terminal-accent/35"
-          aria-hidden
-        />
-        <h2 className="text-terminal-accent text-xs sm:text-sm font-bold uppercase tracking-[0.14em] sm:tracking-[0.22em] m-0 text-left px-0.5 sm:px-1">
-          Experience timeline
-        </h2>
-        <span
-          className="hidden sm:block flex-1 min-w-[4rem] h-px bg-gradient-to-r from-terminal-accent/25 via-terminal-border to-transparent max-w-xs"
-          aria-hidden
-        />
-      </div>
+      <CmdSectionTitle>Experience timeline</CmdSectionTitle>
 
-      <DrupalLogoAscii
-        roleTitle={r0.title}
-        company={r0.company}
-        periodMeta={{
-          range: fmtPeriod(r0.start, r0.end),
-          type: r0.type,
-          location: r0.location,
-        }}
-      />
-
-      <div className="mt-3 mb-8 rounded-lg bg-terminal-surface/55 border border-terminal-border/90 px-3 py-3.5 sm:px-5 sm:py-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]">
-        <RoleBulletsStack role={r0} />
-      </div>
+      {/* Hero: current role + Drupal Druplicon + bullets — single inset panel */}
+      <CmdInsetPanel className="mb-8 border-l-[3px] border-l-terminal-accent/70 overflow-hidden">
+        <DrupalLogoAscii
+          embedded
+          compact={false}
+          roleTitle={r0.title}
+          company={r0.company}
+          periodMeta={{
+            range: fmtPeriod(r0.start, r0.end),
+            type: r0.type,
+            location: r0.location,
+          }}
+        />
+        <div className="mt-5 pt-5 border-t border-terminal-border/65">
+          <RoleBulletsStack role={r0} />
+        </div>
+      </CmdInsetPanel>
 
       {rest.map((r, i) => (
         <SecondaryRoleCard key={`${r.company}-${r.start}-${i}`} role={r} />
       ))}
 
-      <section className="mt-10 pt-6 border-t border-terminal-border">
-        <h3 className="text-terminal-accent text-[11px] font-bold uppercase tracking-[0.2em] mb-3 m-0">
-          Education
-        </h3>
-        <ul className="space-y-3 list-none m-0 p-0">
-          {education.map((e, i) => (
-            <li key={i} className="text-sm leading-relaxed">
-              <span className="text-terminal-link font-medium">{e.degree}</span>
-              <span className="text-terminal-muted"> · </span>
-              <span className="text-terminal-text">{e.school}</span>
-              <span className="block sm:inline text-terminal-muted text-xs mt-1 sm:mt-0 sm:ml-2 tabular-nums">
-                ({e.period})
-              </span>
-            </li>
-          ))}
-        </ul>
+      <section className="mt-10">
+        <CmdInsetPanel className="border-l-[3px] border-l-terminal-accent/45">
+          <h3 className="text-terminal-accent text-[11px] font-bold uppercase tracking-[0.2em] mb-4 m-0">
+            Education
+          </h3>
+          <ul className="space-y-3 list-none m-0 p-0">
+            {education.map((e, i) => (
+              <li key={i} className="text-sm leading-relaxed">
+                <span className="text-terminal-link font-medium">{e.degree}</span>
+                <span className="text-terminal-muted"> · </span>
+                <span className="text-terminal-text">{e.school}</span>
+                <span className="block sm:inline text-terminal-muted text-xs mt-1 sm:mt-0 sm:ml-2 tabular-nums">
+                  ({e.period})
+                </span>
+              </li>
+            ))}
+          </ul>
+        </CmdInsetPanel>
       </section>
     </div>
   );

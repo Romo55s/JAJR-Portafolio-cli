@@ -73,10 +73,9 @@ export function BootSequence({ onDone }: Props) {
 
     if (!banner || !lines.length) return;
 
-    let breathTween: gsap.core.Tween | null = null;
+    let breathTween: gsap.core.Animation | null = null;
 
     if (reduceMotion || skipped) {
-      breathTween?.kill();
       lines.forEach((l) => {
         l.style.opacity = '1';
         l.style.transform = 'none';
@@ -88,7 +87,6 @@ export function BootSequence({ onDone }: Props) {
       }, 200);
       return () => {
         window.clearTimeout(t);
-        breathTween?.kill();
       };
     }
 

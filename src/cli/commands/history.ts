@@ -2,15 +2,18 @@ import type { Command } from '../types';
 
 export const historyCmd: Command = {
   name: 'history',
-  summary: 'Show recently typed commands.',
+  aliases: ['hist'],
+  summary: 'Show recent commands.',
   run: ({ print, state }) => {
-    const list = state.history;
+    const list = [...state.history].reverse();
     if (!list.length) {
-      print({ kind: 'text', lines: ['(no history yet)'], tone: 'dim' });
+      print({ kind: 'text', lines: ['No commands yet.'], tone: 'dim' });
       return;
     }
     const w = String(list.length).length;
-    const lines = list.map((cmd, i) => `  ${String(i + 1).padStart(w)}  ${cmd}`);
-    print({ kind: 'text', lines: ['History:', '', ...lines] });
+    print({
+      kind: 'text',
+      lines: list.map((cmd, i) => `${String(i + 1).padStart(w)}  ${cmd}`),
+    });
   },
 };

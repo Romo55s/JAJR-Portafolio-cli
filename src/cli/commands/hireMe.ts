@@ -11,11 +11,13 @@ export const hireMeCmd: Command = {
       kind: 'text',
       lines: [
         '> opening secure channel...',
-        '> ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 100%',
+        // Avoid Unicode shade blocks (▓): they expand to full cell height in JetBrains Mono.
+        `> ${'#'.repeat(34)} 100%`,
         '> ready.',
         '',
         `Email:    ${profile.email}`,
         `LinkedIn: ${profile.links.linkedin}`,
+        `Book:     ${profile.links.booking}`,
         '',
         '(opening hire-me overlay — press Esc to close)',
       ],

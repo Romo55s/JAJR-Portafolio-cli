@@ -1,23 +1,17 @@
+import { createElement } from 'react';
 import type { Command } from '../types';
-import { secret } from '../../content/secret';
 import { emit } from '../../lib/analytics';
+import { SecretStoryOutput, secretSearchableMirror } from '../../components/cli/SecretCliOutput';
 
 export const secretCmd: Command = {
   name: 'secret',
-  aliases: ['easter', 'story'],
-  summary: 'A small confession. (Easter egg.)',
+  summary: 'Something hidden.',
   run: ({ print }) => {
-    print({
-      kind: 'text',
-      lines: [
-        `> decrypting ${secret.title}...`,
-        '> bypassing /etc/responsibility/policy.d/*',
-        '> rendering memory dump...',
-        '',
-      ],
-      tone: 'dim',
-    });
-    print({ kind: 'text', lines: secret.body, tone: 'accent', typed: true });
     emit({ type: 'secret_view' });
+    print({
+      kind: 'react',
+      searchable: secretSearchableMirror(),
+      node: createElement(SecretStoryOutput),
+    });
   },
 };

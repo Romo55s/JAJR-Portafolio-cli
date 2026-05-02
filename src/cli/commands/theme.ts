@@ -1,38 +1,46 @@
+import { createElement } from 'react';
 import type { Command } from '../types';
 import type { ThemeName } from '../../store/terminalStore';
-import { emit } from '../../lib/analytics';
+import {
+  ThemeErrorOutput,
+  ThemeListOutput,
+  ThemeResultOutput,
+  themeSearchableMirror,
+} from '../../components/cli/SettingsCliOutput';
 
 const THEMES: ThemeName[] = ['green', 'amber', 'mono', 'matrix'];
 
 export const themeCmd: Command = {
   name: 'theme',
   summary: 'Switch terminal theme.',
-  usage: `theme <${THEMES.join('|')}>`,
-  run: ({ args, print, state, actions, emit: emitUi }) => {
+  usage: 'theme [green|amber|mono|matrix]',
+  run: ({ args, print, state, actions }) => {
     if (!args.length) {
       print({
-        kind: 'text',
-        lines: [
-          `current theme: ${state.theme}`,
-          `available:     ${THEMES.join(', ')}`,
-          `usage:         theme <name>`,
-        ],
+        kind: 'react',
+        searchable: themeSearchableMirror(),
+        node: createElement(ThemeListOutput, { current: state.theme }),
       });
       return;
     }
-    const next = args[0].toLowerCase();
-    if (!THEMES.includes(next as ThemeName)) {
+    const next = args[0].toLowerCase() as ThemeName;
+    if (!THEMES.includes(next)) {
       print({
-        kind: 'text',
-        lines: [`unknown theme: ${next}`, `available: ${THEMES.join(', ')}`],
-        tone: 'error',
+        kind: 'react',
+        searchable: `unknown theme ${next}`,
+        node: createElement(ThemeErrorOutput, {
+          name: next,
+          available: THEMES.join(', '),
+        }),
       });
       return;
     }
-    actions.setTheme(next as ThemeName);
-    emitUi({ kind: 'theme', name: next as ThemeName });
-    emit({ type: 'theme_change', name: next });
-    print({ kind: 'text', lines: [`theme → ${next}`], tone: 'accent' });
+    actions.setTheme(next);
+    print({
+      kind: 'react',
+      searchable: `theme set to ${next}`,
+      node: createElement(ThemeResultOutput, { next }),
+    });
   },
-  complete: (args) => (args.length === 1 ? [...THEMES] : []),
+  complete: () => THEMES,
 };

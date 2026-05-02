@@ -82,7 +82,7 @@ export function Terminal() {
 
         <div
           ref={scrollerRef}
-          className="bg-terminal-surface/40 border border-terminal-border rounded-lg p-3 sm:p-6 min-h-[56dvh] sm:min-h-[70dvh] max-h-[calc(100svh-10rem)] sm:max-h-[82dvh] overflow-x-auto overflow-y-auto shadow-terminal overscroll-contain"
+          className="bg-terminal-surface/40 border border-terminal-border rounded-lg p-3 sm:p-6 min-h-[56dvh] sm:min-h-[70dvh] max-h-[calc(100svh-10rem)] sm:max-h-[82dvh] overflow-x-auto overflow-y-auto shadow-terminal overscroll-contain text-sm leading-snug"
           onClick={(e) => {
             const el = e.target as HTMLElement;
             if (el.closest('[data-terminal-output]')) return;
@@ -105,7 +105,7 @@ export function Terminal() {
               </div>
 
               {chipMatches?.length ? (
-                <div className="font-mono text-terminal-muted text-xs sm:text-sm mt-1 break-words">
+                <div className="font-mono text-terminal-muted text-[11px] sm:text-xs mt-1 break-words">
                   → {chipMatches.join('  ')}
                 </div>
               ) : null}

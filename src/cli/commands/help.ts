@@ -1,6 +1,17 @@
 import type { Command } from '../types';
 import { registry } from '../registry';
 
+function manualLines(cmd: Command): string[] {
+  const lines: string[] = [cmd.name, '', cmd.summary, ''];
+  if (cmd.usage) {
+    lines.push('SYNOPSIS', `    ${cmd.usage}`, '');
+  }
+  if (cmd.aliases?.length) {
+    lines.push('ALIASES', `    ${cmd.aliases.join(', ')}`, '');
+  }
+  return lines;
+}
+
 export const helpCmd: Command = {
   name: 'help',
   aliases: ['?'],
@@ -17,30 +28,23 @@ export const helpCmd: Command = {
         });
         return;
       }
-      const lines = [
-        `${target.name.toUpperCase()}(1)                     User Commands`,
-        '',
-        'NAME',
-        `    ${target.name} — ${target.summary}`,
-        ...(target.usage ? ['', 'USAGE', `    ${target.usage}`] : []),
-        ...(target.aliases?.length ? ['', 'ALIASES', `    ${target.aliases.join(', ')}`] : []),
-      ];
-      print({ kind: 'text', lines });
+      print({ kind: 'text', lines: manualLines(target) });
       return;
     }
     const cmds = registry.visible().sort((a, b) => a.name.localeCompare(b.name));
-    const w = Math.max(...cmds.map((c) => c.name.length)) + 2;
-    const lines = [
-      'Available commands:',
-      '',
-      ...cmds.map((c) => `  ${c.name.padEnd(w)}${c.summary}`),
-      '',
-      'Tips:',
-      '  • Tab to autocomplete · ↑/↓ to navigate history',
-      '  • Pipe with `|` (e.g. `projects | grep react`)',
-      '  • Try: `hire me`, `secret`, `theme matrix`',
-    ];
-    print({ kind: 'text', lines });
+    const w = Math.max(...cmds.map((c) => c.name.length), 6);
+    print({
+      kind: 'text',
+      lines: [
+        'commands',
+        '',
+        ...cmds.map((c) => `  ${c.name.padEnd(w)}  ${c.summary}`),
+        '',
+        'tips:',
+        '  Tab completes · ↑/↓ history · pipes: projects | grep react',
+        '  try: hire me · secret · theme matrix',
+      ],
+    });
   },
   complete: (args) => (args.length === 1 ? registry.vocabulary() : []),
 };

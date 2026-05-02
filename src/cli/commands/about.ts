@@ -8,19 +8,14 @@ export const aboutCmd: Command = {
   run: ({ print }) => {
     print({
       kind: 'text',
-      lines: [`# ${profile.name}`, `# ${profile.headline}`, ''],
-      tone: 'accent',
-    });
-    print({ kind: 'text', lines: profile.bio });
-    print({
-      kind: 'text',
       lines: [
+        profile.name,
+        profile.headline,
         '',
-        `→ Type \`projects\` to see what I've shipped.`,
-        `→ Type \`experience\` for the full timeline.`,
-        `→ Type \`hire me\` to start a conversation.`,
+        ...profile.bio,
+        '',
+        'Try: projects · experience · hire me',
       ],
-      tone: 'dim',
     });
   },
 };

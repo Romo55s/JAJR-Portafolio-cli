@@ -80,10 +80,10 @@ export function Prompt({
 
   return (
     <div
-      className="flex flex-col gap-2 sm:flex-row sm:items-baseline font-mono leading-6 cursor-text touch-manipulation"
+      className="flex flex-col gap-2 sm:flex-row sm:items-baseline font-mono leading-snug cursor-text touch-manipulation"
       onPointerUp={() => inputRef.current?.focus()}
     >
-      <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-[11px] sm:text-sm shrink-0 max-w-full">
+      <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-[11px] sm:text-xs shrink-0 max-w-full">
         <span className="text-terminal-accent truncate max-[380px]:max-w-[11rem]">
           {profile.handle}@{profile.hostname}
         </span>
@@ -92,11 +92,11 @@ export function Prompt({
         <span className="text-terminal-muted select-none">$</span>
       </div>
 
-      <div className="relative flex-1 min-w-0 w-full sm:w-auto min-h-[2.75rem] sm:min-h-0 flex items-center border-t border-terminal-border/40 pt-2 sm:border-t-0 sm:pt-0">
+      <div className="relative flex-1 min-w-0 w-full sm:w-auto min-h-[2.35rem] sm:min-h-0 flex items-center border-t border-terminal-border/40 pt-2 sm:border-t-0 sm:pt-0">
         {/* Hidden mirror to measure typed-text width for the block caret */}
         <span
           ref={measureRef}
-          className="invisible whitespace-pre absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none text-base sm:text-sm leading-6"
+          className="invisible whitespace-pre absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none text-sm leading-snug"
           aria-hidden="true"
         >
           {value || ' '}
@@ -119,7 +119,7 @@ export function Prompt({
           spellCheck={false}
           inputMode="text"
           enterKeyHint="send"
-          className="block w-full bg-transparent outline-none border-none text-terminal-text text-base sm:text-sm leading-6 py-1"
+          className="block w-full bg-transparent outline-none border-none text-terminal-text text-sm leading-snug py-1"
           aria-label="Terminal input"
         />
 

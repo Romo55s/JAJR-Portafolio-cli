@@ -1,6 +1,17 @@
 import type { Command } from '../types';
 import { registry } from '../registry';
 
+function manualLines(cmd: Command): string[] {
+  const lines: string[] = [cmd.name, '', cmd.summary, ''];
+  if (cmd.usage) {
+    lines.push('SYNOPSIS', `    ${cmd.usage}`, '');
+  }
+  if (cmd.aliases?.length) {
+    lines.push('ALIASES', `    ${cmd.aliases.join(', ')}`, '');
+  }
+  return lines;
+}
+
 export const manCmd: Command = {
   name: 'man',
   summary: 'Show the manual for a command.',
@@ -19,19 +30,7 @@ export const manCmd: Command = {
       });
       return;
     }
-    print({
-      kind: 'text',
-      lines: [
-        `${target.name.toUpperCase()}(1)                     User Commands`,
-        '',
-        'NAME',
-        `    ${target.name} — ${target.summary}`,
-        ...(target.usage ? ['', 'USAGE', `    ${target.usage}`] : []),
-        ...(target.aliases?.length ? ['', 'ALIASES', `    ${target.aliases.join(', ')}`] : []),
-        '',
-        'TONY ROMO PORTFOLIO              ',
-      ],
-    });
+    print({ kind: 'text', lines: manualLines(target) });
   },
   complete: (args) => (args.length === 1 ? registry.vocabulary() : []),
 };

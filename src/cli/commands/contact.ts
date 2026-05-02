@@ -1,23 +1,16 @@
+import { createElement } from 'react';
 import type { Command } from '../types';
-import { profile } from '../../content/profile';
+import { ContactOutput, contactSearchableMirror } from '../../components/cli/WhoamiAboutContactOutput';
 
 export const contactCmd: Command = {
   name: 'contact',
   aliases: ['email', 'reach'],
-  summary: 'Email, LinkedIn, GitHub.',
+  summary: 'Email, LinkedIn, GitHub, schedule a call, resume.',
   run: ({ print }) => {
     print({
-      kind: 'text',
-      lines: [
-        'Contact:',
-        '',
-        `  email     ${profile.email}`,
-        `  linkedin  ${profile.links.linkedin}`,
-        `  github    ${profile.links.github}`,
-        `  resume    ${profile.links.resume}`,
-        '',
-        'Tip: type `hire me` for a one-click email + copy.',
-      ],
+      kind: 'react',
+      searchable: contactSearchableMirror(),
+      node: createElement(ContactOutput),
     });
   },
 };

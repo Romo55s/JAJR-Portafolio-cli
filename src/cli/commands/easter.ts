@@ -77,11 +77,7 @@ export const catCmd: Command = {
         `tip: type \`help\` to see what's possible`,
         '',
       ],
-      'readme.md': [
-        '# Tony Romo',
-        '',
-        '> Build it. Ship it. Maintain it. Mentor on it.',
-      ],
+      'readme.md': ['# Tony Romo', '', '> Build it. Ship it. Maintain it. Mentor on it.'],
     };
     if (!f) {
       print({ kind: 'text', lines: ['cat: missing file operand'], tone: 'error' });
@@ -95,6 +91,12 @@ export const catCmd: Command = {
   },
   complete: () => ['/etc/passwd', '/etc/motd', 'readme.md'],
 };
+
+function hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return h;
+}
 
 export const gitCmd: Command = {
   name: 'git',
@@ -120,12 +122,6 @@ export const gitCmd: Command = {
   },
   complete: (args) => (args.length === 1 ? ['log'] : []),
 };
-
-function hashStr(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
-  return h;
-}
 
 export const npmCmd: Command = {
   name: 'npm',
@@ -168,13 +164,7 @@ export const tracerouteCmd: Command = {
   usage: 'traceroute <host>',
   run: ({ args, print }) => {
     const host = args[0] || 'insulet.com';
-    const hops = [
-      'router.lan',
-      'isp-edge.mx',
-      'cloudflare-pop',
-      'acquia-edge',
-      `${host} (drupal-prod)`,
-    ];
+    const hops = ['router.lan', 'isp-edge.mx', 'cloudflare-pop', 'acquia-edge', `${host} (drupal-prod)`];
     const lines = [`traceroute to ${host}, 30 hops max, 60 byte packets`];
     hops.forEach((h, i) => {
       const ms = (5 + Math.random() * 25).toFixed(1);

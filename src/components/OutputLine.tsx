@@ -45,7 +45,7 @@ export const OutputLine = memo(function OutputLine({ block }: Props) {
   switch (block.kind) {
     case 'echo':
       return (
-        <div className="font-mono leading-6 break-words select-text">
+        <div className="font-mono leading-snug break-words select-text">
           <span className="text-terminal-accent">
             {profile.handle}@{profile.hostname}
           </span>
@@ -58,7 +58,7 @@ export const OutputLine = memo(function OutputLine({ block }: Props) {
     case 'text': {
       const cls = toneClass[block.tone ?? 'normal'];
       return (
-        <div className={`font-mono leading-6 ${cls} select-text`}>
+        <div className={`font-mono leading-snug ${cls} select-text`}>
           {block.lines.map((l, i) => {
             const rendered = renderText(l);
             return (

@@ -30,13 +30,37 @@ export type OutputBlock =
       searchable?: string;
     };
 
+/** Blocks passed to `print` before an `id` is assigned. */
+export type OutputBlockInput =
+  | {
+      kind: 'echo';
+      input: string;
+    }
+  | {
+      kind: 'text';
+      lines: string[];
+      tone?: Tone;
+      typed?: boolean;
+    }
+  | {
+      kind: 'ascii';
+      art: string;
+      tone?: Tone;
+    }
+  | {
+      kind: 'react';
+      node: ReactNode;
+      /** Plain-text mirror so `grep` can filter react blocks too. */
+      searchable?: string;
+    };
+
 export interface CommandCtx {
   raw: string;
   args: string[];
   /** Output coming from a previous segment of a `|` pipeline. */
   pipeIn?: OutputBlock[];
   /** Push a block to the output buffer. */
-  print: (block: Omit<OutputBlock, 'id'>) => OutputBlock;
+  print: (block: OutputBlockInput) => OutputBlock;
   /** State + actions snapshot. Reads are live via the store. */
   state: TerminalState;
   actions: TerminalActions;

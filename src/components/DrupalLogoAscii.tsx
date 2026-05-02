@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import gsap from 'gsap';
 
 /** Plain-text hook for `experience | grep` (Drupal mark). */
@@ -24,6 +24,10 @@ export interface DrupalLogoAsciiProps {
   roleTitle: string;
   company: string;
   periodMeta: { range: string; type: string; location: string };
+  /** Full-size Druplicon (default). When true, ASCII lines shrink for very narrow layouts. */
+  compact?: boolean;
+  /** Inside an inset card — drop outer dashed border so the card chrome carries the frame. */
+  embedded?: boolean;
 }
 
 const blue = 'text-[color:var(--drupal-blue)]';
@@ -57,10 +61,24 @@ function AnimLine({
  * Druplicon ASCII beside the current role title (Software Engineer — Insulet · current).
  * Text is selectable so users can copy/paste from the terminal.
  */
-export function DrupalLogoAscii({ roleTitle, company, periodMeta }: DrupalLogoAsciiProps) {
+export function DrupalLogoAscii({
+  roleTitle,
+  company,
+  periodMeta,
+  compact = false,
+  embedded = false,
+}: DrupalLogoAsciiProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const articleRef = useRef<HTMLElement>(null);
+  const asciiInnerRef = useRef<HTMLDivElement>(null);
   const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
   const pulseRef = useRef<gsap.core.Tween | null>(null);
+
+  const [asciiFit, setAsciiFit] = useState<{
+    scale: number;
+    boxW: number;
+    boxH: number;
+  } | null>(null);
 
   const setLine =
     (i: number) =>
@@ -68,7 +86,45 @@ export function DrupalLogoAscii({ roleTitle, company, periodMeta }: DrupalLogoAs
       lineRefs.current[i] = el;
     };
 
-  const compact = true;
+  /** Scale Druplicon so its box height matches the left column (role + meta + “Drupal @ …”). */
+  useLayoutEffect(() => {
+    if (!embedded) {
+      setAsciiFit(null);
+      return;
+    }
+
+    const article = articleRef.current;
+    const ascii = asciiInnerRef.current;
+    if (!article || !ascii) return;
+
+    const measure = () => {
+      const lh = article.offsetHeight;
+      const aw = ascii.offsetWidth;
+      const ah = ascii.offsetHeight;
+      if (ah < 4 || lh < 4 || aw < 4) return;
+
+      const pad = 6;
+      const scale = Math.min(1, Math.max(0.2, (lh + pad) / ah));
+
+      setAsciiFit({
+        scale,
+        boxW: aw * scale,
+        boxH: ah * scale,
+      });
+    };
+
+    measure();
+
+    const ro = new ResizeObserver(measure);
+    ro.observe(article);
+    ro.observe(ascii);
+    window.addEventListener('resize', measure);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [embedded, compact, roleTitle, company, periodMeta.range, periodMeta.type, periodMeta.location]);
 
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -131,13 +187,103 @@ export function DrupalLogoAscii({ roleTitle, company, periodMeta }: DrupalLogoAs
     };
   }, []);
 
+  const asciiLines = (
+    <>
+      <AnimLine compact={compact} lineRef={setLine(0)}>
+        <span className={dk}>{'                ░                '}</span>
+      </AnimLine>
+      <AnimLine compact={compact} lineRef={setLine(1)}>
+        <span className={blue}>{'               ███               '}</span>
+      </AnimLine>
+      <AnimLine compact={compact} lineRef={setLine(2)}>
+        <span className={blue}>{'              █████              '}</span>
+      </AnimLine>
+      <AnimLine compact={compact} lineRef={setLine(3)}>
+        <span className={blue}>{'             ██▓▓▓██             '}</span>
+      </AnimLine>
+      <AnimLine compact={compact} lineRef={setLine(4)}>
+        <span className={blue}>{'            ██▓▓▓▓▓██            '}</span>
+      </AnimLine>
+      <AnimLine compact={compact} lineRef={setLine(5)}>
+        <span className={blue}>{'           ██░░░░░░░██           '}</span>
+      </AnimLine>
+      <AnimLine compact={compact} lineRef={setLine(6)}>
+        <span className={blue}>{'          ██░'}</span>
+        <span className={face}>{'∞'}</span>
+        <span className={face}>{'∞'}</span>
+        <span className={blue}>{'░░'}</span>
+        <span className={face}>{'∞'}</span>
+        <span className={face}>{'∞'}</span>
+        <span className={blue}>{'░██        '}</span>
+      </AnimLine>
+      <AnimLine compact={compact} lineRef={setLine(7)}>
+        <span className={blue}>{'          ██░'}</span>
+        <span className={face}>{' · '}</span>
+        <span className={face}>{'‿'}</span>
+        <span className={face}>{' · '}</span>
+        <span className={blue}>{'░░██          '}</span>
+      </AnimLine>
+      <AnimLine compact={compact} lineRef={setLine(8)}>
+        <span className={blue}>{'           ██░░░░░░░██           '}</span>
+      </AnimLine>
+      <AnimLine compact={compact} lineRef={setLine(9)}>
+        <span className={dk}>{'            ██████████           '}</span>
+      </AnimLine>
+      <AnimLine compact={compact} lineRef={setLine(10)}>
+        <span className={blue}>{'             ████████             '}</span>
+      </AnimLine>
+    </>
+  );
+
+  const asciiCore = (
+    <div
+      ref={asciiInnerRef}
+      data-drupal-core
+      className={`inline-block select-text ${embedded ? 'text-right' : 'shrink-0 origin-top-right will-change-transform self-end sm:self-auto order-2'}`}
+      aria-label="Drupal Druplicon ASCII art"
+    >
+      {asciiLines}
+    </div>
+  );
+
+  const asciiColumn =
+    embedded ? (
+      <div
+        className="relative shrink-0 overflow-hidden order-2 self-start ml-auto sm:ml-0"
+        style={
+          asciiFit
+            ? { width: asciiFit.boxW, height: asciiFit.boxH }
+            : { width: '9rem', height: '5.25rem' }
+        }
+      >
+        <div
+          className="absolute top-0 right-0 will-change-transform"
+          style={{
+            transform: `scale(${asciiFit?.scale ?? 0.48})`,
+            transformOrigin: 'top right',
+          }}
+        >
+          {asciiCore}
+        </div>
+      </div>
+    ) : (
+      asciiCore
+    );
+
   return (
     <div
       ref={rootRef}
       className="w-full min-w-0 overflow-x-auto select-text cursor-text [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
     >
       <div className="flex min-w-0 w-full flex-col gap-5 items-stretch sm:flex-row sm:items-start sm:gap-8 sm:justify-between">
-        <article className="relative order-1 min-w-0 w-full max-w-[min(100%,22rem)] sm:max-w-none sm:flex-1 sm:basis-[min(100%,18rem)] pt-5 pl-3 sm:pl-4 border-l-[3px] border-terminal-accent/80 border-t border-dashed border-terminal-border font-mono leading-6 select-text text-left">
+        <article
+          ref={articleRef}
+          className={
+            embedded
+              ? 'relative order-1 min-w-0 w-full max-w-[min(100%,22rem)] sm:max-w-none sm:flex-1 sm:basis-[min(100%,18rem)] pt-0 sm:pt-0 font-mono leading-snug sm:leading-relaxed select-text text-left'
+              : 'relative order-1 min-w-0 w-full max-w-[min(100%,22rem)] sm:max-w-none sm:flex-1 sm:basis-[min(100%,18rem)] pt-5 pl-3 sm:pl-4 border-l-[3px] border-terminal-accent/80 border-t border-dashed border-terminal-border font-mono leading-6 select-text text-left'
+          }
+        >
           <header className="space-y-1.5">
             <div className="text-sm sm:text-base leading-snug break-words">
               <span className="text-terminal-accent" aria-hidden>
@@ -164,55 +310,7 @@ export function DrupalLogoAscii({ roleTitle, company, periodMeta }: DrupalLogoAs
           </div>
         </article>
 
-        <div
-          data-drupal-core
-          className="shrink-0 origin-top-right will-change-transform select-text self-end sm:self-auto order-2"
-          aria-label="Drupal Druplicon ASCII art"
-        >
-          <AnimLine compact={compact} lineRef={setLine(0)}>
-            <span className={dk}>{'                ░                '}</span>
-          </AnimLine>
-          <AnimLine compact={compact} lineRef={setLine(1)}>
-            <span className={blue}>{'               ███               '}</span>
-          </AnimLine>
-          <AnimLine compact={compact} lineRef={setLine(2)}>
-            <span className={blue}>{'              █████              '}</span>
-          </AnimLine>
-          <AnimLine compact={compact} lineRef={setLine(3)}>
-            <span className={blue}>{'             ██▓▓▓██             '}</span>
-          </AnimLine>
-          <AnimLine compact={compact} lineRef={setLine(4)}>
-            <span className={blue}>{'            ██▓▓▓▓▓██            '}</span>
-          </AnimLine>
-          <AnimLine compact={compact} lineRef={setLine(5)}>
-            <span className={blue}>{'           ██░░░░░░░██           '}</span>
-          </AnimLine>
-          <AnimLine compact={compact} lineRef={setLine(6)}>
-            <span className={blue}>{'          ██░'}</span>
-            <span className={face}>{'∞'}</span>
-            <span className={face}>{'∞'}</span>
-            <span className={blue}>{'░░'}</span>
-            <span className={face}>{'∞'}</span>
-            <span className={face}>{'∞'}</span>
-            <span className={blue}>{'░██        '}</span>
-          </AnimLine>
-          <AnimLine compact={compact} lineRef={setLine(7)}>
-            <span className={blue}>{'          ██░'}</span>
-            <span className={face}>{' · '}</span>
-            <span className={face}>{'‿'}</span>
-            <span className={face}>{' · '}</span>
-            <span className={blue}>{'░░██          '}</span>
-          </AnimLine>
-          <AnimLine compact={compact} lineRef={setLine(8)}>
-            <span className={blue}>{'           ██░░░░░░░██           '}</span>
-          </AnimLine>
-          <AnimLine compact={compact} lineRef={setLine(9)}>
-            <span className={dk}>{'            ██████████           '}</span>
-          </AnimLine>
-          <AnimLine compact={compact} lineRef={setLine(10)}>
-            <span className={blue}>{'             ████████             '}</span>
-          </AnimLine>
-        </div>
+        {asciiColumn}
       </div>
     </div>
   );

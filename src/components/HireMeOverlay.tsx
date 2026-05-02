@@ -120,14 +120,14 @@ export function HireMeOverlay({ open, onClose }: Props) {
             GitHub · Romo55s
           </a>
           <a
-            href={profile.links.calendly}
+            href={profile.links.booking}
             target="_blank"
             rel="noopener noreferrer"
             className="chip"
           >
             Schedule a call
           </a>
-          <a href={profile.links.resume} className="chip" download>
+          <a href={profile.links.resume} className="chip" download="JAJR-CSV.pdf">
             Download resume
           </a>
         </div>

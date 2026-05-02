@@ -1,43 +1,35 @@
 import type { Command, OutputBlock } from '../types';
 
-function blockToLines(b: OutputBlock): string[] {
-  switch (b.kind) {
-    case 'text':
-      return b.lines;
-    case 'ascii':
-      return b.art.split('\n');
-    case 'react':
-      return b.searchable ? b.searchable.split('\n') : [];
-    case 'echo':
-      return [];
+function blocksToLines(blocks: OutputBlock[] | undefined): string[] {
+  if (!blocks?.length) return [];
+  const lines: string[] = [];
+  for (const b of blocks) {
+    if (b.kind === 'text') lines.push(...b.lines);
+    else if (b.kind === 'react' && b.searchable) lines.push(...b.searchable.split('\n'));
+    else if (b.kind === 'ascii') lines.push(...b.art.split('\n'));
   }
+  return lines;
 }
 
 export const grepCmd: Command = {
   name: 'grep',
-  summary: 'Filter output (pipe or standalone).',
-  usage: 'grep <pattern>   |   <cmd> | grep <pattern>',
-  run: ({ args, pipeIn, print, state }) => {
-    if (!args.length) {
-      print({ kind: 'text', lines: ['usage: grep <pattern>'], tone: 'error' });
+  summary: 'Filter lines matching a pattern.',
+  usage: 'grep <pattern>',
+  run: ({ args, pipeIn, print }) => {
+    const pattern = args.join(' ').trim();
+    if (!pattern) {
+      print({
+        kind: 'text',
+        lines: ['usage: grep <pattern>', '(often used after a pipe)'],
+        tone: 'error',
+      });
       return;
     }
-    const pattern = args.join(' ');
-    let regex: RegExp;
-    try {
-      regex = new RegExp(pattern, 'i');
-    } catch {
-      regex = new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-    }
-    const source = pipeIn?.length ? pipeIn : state.output;
-    const matched: string[] = [];
-    for (const block of source) {
-      for (const line of blockToLines(block)) {
-        if (regex.test(line)) matched.push(line);
-      }
-    }
+    const inputLines = blocksToLines(pipeIn);
+    const needle = pattern.toLowerCase();
+    const matched = inputLines.filter((line) => line.toLowerCase().includes(needle));
     if (!matched.length) {
-      print({ kind: 'text', lines: [`(no matches for /${pattern}/)`], tone: 'dim' });
+      print({ kind: 'text', lines: ['no matches'], tone: 'dim' });
       return;
     }
     print({ kind: 'text', lines: matched });

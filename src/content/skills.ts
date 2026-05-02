@@ -15,6 +15,14 @@ export const skills: Record<string, string[]> = {
   Languages: ['Spanish (native)', 'English (professional)'],
 };
 
+/** Warm copy for the interactive skills view (`skills` command). */
+export const skillsManifestCopy = {
+  kicker: 'Loaded capability graph · grep-friendly',
+  lead:
+    'Drupal stacks at Insulet by day; React + TypeScript side quests by night. Everything below ships to prod — no trophy keywords.',
+  aside: 'Tip: try `skills | grep Drupal` or pipe any command through `grep`.',
+};
+
 export const interests = [
   'Programming & systems thinking',
   'Running, training, gym',

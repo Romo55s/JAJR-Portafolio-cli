@@ -13,7 +13,9 @@ export const profile = {
     linkedin: 'https://www.linkedin.com/in/tony55s/',
     github: 'https://github.com/Romo55s',
     resume: '/resume.pdf',
-    calendly: 'https://calendly.com/your-handle/intro-call',
+    /** Cal.com scheduling (was placeholder Calendly). */
+    booking:
+      'https://cal.com/jose-antonio-jimenez-romo-xikrtx/30min?duration=30&overlayCalendar=true',
   },
   bio: [
     "Hi, I'm Tony Romo — a Computer Systems Engineer based in Aguascalientes, México.",

@@ -11,6 +11,7 @@ export type AnalyticsEvent =
   | { type: 'hire_me_open' }
   | { type: 'email_copy' }
   | { type: 'secret_view' }
+  | { type: 'resume_download' }
   | { type: 'theme_change'; name: string }
   | { type: 'sound_toggle'; on: boolean }
   | { type: 'session_end'; durationMs: number; cmdCount: number };
